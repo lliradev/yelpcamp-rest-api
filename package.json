@@ -1,0 +1,29 @@
+{
+  "name": "yelpcamp-rest-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -w",
+    "dev": "cross-env NODE_ENV=development nodemon dist/index.js",
+    "start": "cross-env NODE_ENV=production node dist/index.js"
+  },
+  "keywords": [],
+  "author": "Luis Lira",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.7",
+    "@types/express": "^4.17.8",
+    "@types/mongoose": "^5.7.36",
+    "@types/morgan": "^1.9.1",
+    "nodemon": "^2.0.4"
+  }
+}
