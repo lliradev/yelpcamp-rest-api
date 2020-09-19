@@ -1,4 +1,9 @@
+# compiled output
 node_modules
 dist
+
+# enviroment
 .env
+
+# IDE - VSCode
 .vscode

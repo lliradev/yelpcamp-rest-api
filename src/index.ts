@@ -1,11 +1,14 @@
-import app from './app';
-import dotenv from 'dotenv';
+/**
+ * Archivo principal que arranca la aplicación
+ *
+ * @author llira
+ * @version 1.0
+ */
+import { App } from './app';
 
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config();
+async function main() {
+  const app = new App();
+  await app.listen();
 }
 
-app.listen(app.get('port'), () => {
-  console.log('Server on port', app.get('port'));
-  console.log('Enviroment:', process.env.NODE_ENV);
-});
+main();
