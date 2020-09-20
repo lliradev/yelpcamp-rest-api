@@ -4,7 +4,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 // Schemas
 const CommentSchema = new Schema(
   {
-    title: String,
+    title: { type: String, trim: true },
     likes: Number,
     dislikes: Number,
   },
@@ -14,17 +14,15 @@ const TutorialSchema = new Schema(
   {
     title: {
       type: String,
-      required: 'El campo título no puede estar vacío.',
+      required: [true, 'El campo título no puede estar vacío.'],
       trim: true,
     },
     description: {
       type: String,
-      required: 'El campo descripción no puede estar vacío.',
+      required: [true, 'El campo descripción no puede estar vacío.'],
       trim: true,
     },
-    isPublished: {
-      type: Boolean,
-    },
+    isPublished: Boolean,
     comments: [CommentSchema],
   },
   { versionKey: false, timestamps: true }
