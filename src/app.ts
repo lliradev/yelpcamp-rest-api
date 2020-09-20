@@ -8,9 +8,10 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
-import helmet from "helmet";
+import helmet from 'helmet';
 import { config } from 'dotenv';
 import AppRouting from './routing/app.routing';
+import TutorialRouting from './routing/tutorial.routing';
 
 export class App {
   private app: Application;
@@ -42,13 +43,26 @@ export class App {
    * Método que se ejecuta antes o después del manejo de una ruta
    */
   private middlewares(): void {
-    this.app.use(helmet());
+    // this.app.use(helmet());
+    this.app.use(
+      helmet({
+        contentSecurityPolicy: {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+          },
+        },
+      })
+    );
     this.app.disable('x-powered-by');
     this.app.use(morgan('dev'));
-    this.app.use(cors({
-      origin: 'http://localhost:4200',
-      methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
-    }));
+    this.app.use(
+      cors({
+        origin: ['http://localhost:4200', 'http://localhost:8080'],
+        methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type'],
+      })
+    );
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
   }
@@ -58,6 +72,7 @@ export class App {
    */
   private routing(): void {
     this.app.use('/', AppRouting);
+    this.app.use('/api/tutorials', TutorialRouting);
   }
 
   /**

@@ -5,7 +5,7 @@
  * @version 1.0
  */
 import { Router } from 'express';
-import app from '../controllers/app.controller';
+import { AppController } from '../controllers/app.controller';
 
 class AppRouting {
   public router: Router;
@@ -16,7 +16,7 @@ class AppRouting {
   }
 
   private initConfig(): void {
-    this.router.get('/', app.welcome);
+    this.router.get('/', AppController.welcome);
   }
 }
 
