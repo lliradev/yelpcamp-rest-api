@@ -9,9 +9,9 @@ import cors from 'cors';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 import helmet from 'helmet';
-import { config } from 'dotenv';
 import AppRouting from './routing/app.routing';
 import TutorialRouting from './routing/tutorial.routing';
+import { environment } from './common/util/environment';
 
 export class App {
   private app: Application;
@@ -21,10 +21,6 @@ export class App {
    * @param port puerto para la aplicación
    */
   constructor(private port?: number | string) {
-    // Condición para llamar el método config() si el ambiente es desarrollo
-    if (process.env.NODE_ENV !== 'production') {
-      config();
-    }
     this.app = express();
     this.initConfig();
     this.middlewares();
@@ -80,7 +76,7 @@ export class App {
    */
   private connectToDatabase(): void {
     mongoose.Promise = global.Promise;
-    mongoose.connect(`${process.env.MONGODB_URI}`, {
+    mongoose.connect(`${environment.databaseUrl}`, {
       useCreateIndex: true,
       useNewUrlParser: true,
       useFindAndModify: false,
