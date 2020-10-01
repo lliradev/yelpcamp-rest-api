@@ -1,4 +1,10 @@
-import express, { Application, NextFunction, Request, Response } from 'express';
+/**
+ * Middlewares globales para la aplicación
+ *
+ * @author llira
+ * @version 1.0
+ */
+import express, { Application } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -8,7 +14,7 @@ import helmet from 'helmet';
  * @param app Application
  */
 export const globalMiddleware = (app: Application) => {
-  console.log('Set global middleware.');
+  console.log('Set global middleware');
 
   // app.use(helmet());
   app.use(

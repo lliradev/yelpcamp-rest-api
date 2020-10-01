@@ -58,7 +58,7 @@ export class App {
       useFindAndModify: false,
       useUnifiedTopology: true,
     });
-    mongoose.connection.once('open', () => console.log('Database connected.'));
+    mongoose.connection.once('open', () => console.log('Database connected'));
     mongoose.connection.once('error', (err) => console.error('Error: ', err));
   }
 
