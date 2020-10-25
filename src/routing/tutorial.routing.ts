@@ -6,10 +6,10 @@ class TutorialRouting {
 
   constructor() {
     this.router = Router();
-    this.initConfig();
+    this.start();
   }
 
-  private initConfig(): void {
+  private start(): void {
     this.router.get('/', TutorialController.findAll);
     this.router.get('/:id', TutorialController.findById);
     this.router.post('/', TutorialController.insert);

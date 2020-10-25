@@ -1,8 +1,11 @@
-import { Request, Response } from 'express';
+import { Request, Response, Router } from 'express';
 import { TutorialModel } from '../models/tutorial.model';
 import { StatusCodes } from 'http-status-codes';
+import { TutorialService } from '../services/tutorial.service';
 
 export class TutorialController {
+  constructor(private tutorialService: TutorialService) {}
+
   /**
    * Método para obtener una lista con paginación de los registros
    *
@@ -10,7 +13,7 @@ export class TutorialController {
    * @param res objeto que devuelve información sobre la respuesta HTTP
    */
   public static async findAll(req: Request, res: Response): Promise<void> {
-    try {
+    /* try {
       const orderBy = req.query.orderBy ? req.query.orderBy : '_id';
       const shape = req.query.shape ? req.query.shape : 'desc';
       const options = {
@@ -20,6 +23,22 @@ export class TutorialController {
       };
       console.log(options);
       const tutorials = await TutorialModel.paginate({}, options);
+      res.status(StatusCodes.OK).json(tutorials);
+    } catch (e) {
+      console.error(e);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: e.message });
+    } */
+    try {
+      const orderBy = req.query.orderBy ? req.query.orderBy : '_id';
+      const shape = req.query.shape ? req.query.shape : 'desc';
+      const options = {
+        page: Number(req.query.page) ? Number(req.query.page) : 1,
+        limit: Number(req.query.limit) ? Number(req.query.limit) : 5,
+        sort: { [orderBy as string]: shape },
+      };
+      const tutorials = await this.tutorialService.findAll({}, options);
       res.status(StatusCodes.OK).json(tutorials);
     } catch (e) {
       console.error(e);
@@ -82,7 +101,9 @@ export class TutorialController {
       }
     } catch (e) {
       console.error(e);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: e.message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: e.message });
     }
   }
 
