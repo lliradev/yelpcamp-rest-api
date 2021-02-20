@@ -6,9 +6,9 @@
  */
 import express, { Application } from 'express';
 import mongoose from 'mongoose';
-import { AppRouting, TutorialRouting } from './routing';
 import { environment } from './common/environment/environment';
 import { globalMiddleware } from './common/middlewares';
+import { AppRouting, TutorialRouting } from './routing';
 
 export class App {
   private app: Application;

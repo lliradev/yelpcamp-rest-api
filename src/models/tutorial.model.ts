@@ -1,9 +1,7 @@
-import { Schema, model, Document, PaginateModel } from 'mongoose';
+import { Document, model, PaginateModel, Schema } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { ITutorial } from './interfaces/tutorial.interface';
-import { TutorialSchema } from './schemas/tutorial.schema';
 
-/* // Schemas
+// Schemas
 const CommentSchema = new Schema(
   {
     title: { type: String, trim: true },
@@ -43,10 +41,8 @@ interface IComment {
   dislikes: number;
 }
 
-TutorialSchema.plugin(mongoosePaginate); */
-
+TutorialSchema.plugin(mongoosePaginate);
 interface TutorialModel<T extends Document> extends PaginateModel<T> {}
-
 export const TutorialModel: TutorialModel<ITutorial> = model<ITutorial>(
   'Tutorial',
   TutorialSchema

@@ -7,8 +7,12 @@
 import { App } from './app';
 
 async function main() {
-  const app = new App();
-  await app.listen();
+  try {
+    const app = new App();
+    await app.listen();
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 main();
