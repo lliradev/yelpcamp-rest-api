@@ -6,9 +6,10 @@
  */
 import express, { Application } from 'express';
 import mongoose from 'mongoose';
-import { AppRouting, TutorialRouting } from './routing';
 import { environment } from './common/environment/environment';
 import { globalMiddleware } from './common/middlewares';
+import appRoutes from './routes/app.routes';
+import tutorialRoutes from './routes/tutorial.routes';
 
 export class App {
   private app: Application;
@@ -43,8 +44,8 @@ export class App {
    * Método que contiene las rutas del servidor
    */
   private routing(): void {
-    this.app.use('/', AppRouting);
-    this.app.use('/api/tutorials', TutorialRouting);
+    this.app.use('/', appRoutes);
+    this.app.use('/api/tutorials', tutorialRoutes);
   }
 
   /**
@@ -58,16 +59,14 @@ export class App {
       useFindAndModify: false,
       useUnifiedTopology: true,
     });
-    mongoose.connection.once('open', () => console.log('Database connected'));
+    mongoose.connection.once('open', () => console.log("We're connected"));
     mongoose.connection.once('error', (err) => console.error('Error: ', err));
   }
 
   /**
    * Método para inicializar el servidor
    */
-  public async listen(): Promise<void> {
+  public listen(): void {
     this.app.listen(this.app.get('port'));
-    console.log('Server on port', this.app.get('port'));
-    console.log('Enviroment:', process.env.NODE_ENV);
   }
 }

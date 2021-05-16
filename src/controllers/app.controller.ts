@@ -15,6 +15,7 @@ export class AppController {
    */
   public static welcome(req: Request, res: Response): void {
     res.status(200).json({
+      author: 'Luis Lira',
       message: 'Welcome to YelpCamp REST API',
       name: 'yelpcamp-rest-api',
       description:

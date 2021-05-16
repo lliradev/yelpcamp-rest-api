@@ -14,8 +14,6 @@ import helmet from 'helmet';
  * @param app Application
  */
 export const globalMiddleware = (app: Application) => {
-  console.log('Set global middleware');
-
   // app.use(helmet());
   app.use(
     helmet({

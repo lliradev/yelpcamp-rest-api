@@ -29,7 +29,7 @@ const TutorialSchema = new Schema(
 );
 
 // Interfaces
-interface ITutorial extends Document {
+export interface ITutorial extends Document {
   title: string;
   description: string;
   isPublished: boolean;

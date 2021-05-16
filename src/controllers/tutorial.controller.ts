@@ -11,21 +11,21 @@ export class TutorialController {
    */
   public static async findAll(req: Request, res: Response): Promise<void> {
     try {
-      const orderBy = req.query.orderBy ? req.query.orderBy : '_id';
-      const shape = req.query.shape ? req.query.shape : 'desc';
+      const sort = req.query.sort ? req.query.sort : '_id';
+      const order = req.query.order ? req.query.order : 'desc';
       const options = {
         page: Number(req.query.page) ? Number(req.query.page) : 1,
         limit: Number(req.query.limit) ? Number(req.query.limit) : 5,
-        sort: { [orderBy as string]: shape },
+        sort: { [sort as string]: order },
       };
       console.log(options);
       const tutorials = await TutorialModel.paginate({}, options);
       res.status(StatusCodes.OK).json(tutorials);
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: e.message });
+        .json({ message: err.message });
     }
   }
 
@@ -82,7 +82,9 @@ export class TutorialController {
       }
     } catch (e) {
       console.error(e);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: e.message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: e.message });
     }
   }
 
