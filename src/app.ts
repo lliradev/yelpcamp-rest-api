@@ -10,6 +10,7 @@ import { environment } from './common/environment/environment';
 import { globalMiddleware } from './common/middlewares';
 import appRoutes from './routes/app.routes';
 import tutorialRoutes from './routes/tutorial.routes';
+import authRoutes from './routes/auth.routes';
 
 export class App {
   private app: Application;
@@ -45,6 +46,7 @@ export class App {
    */
   private routing(): void {
     this.app.use('/', appRoutes);
+    this.app.use('/api', authRoutes);
     this.app.use('/api/tutorials', tutorialRoutes);
   }
 

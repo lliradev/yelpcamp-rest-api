@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { TutorialController } from '../controllers/tutorial.controller';
 
-class TutorialRouting {
+class TutorialRoutes {
   public router: Router;
 
   constructor() {
@@ -19,4 +19,4 @@ class TutorialRouting {
   }
 }
 
-export default new TutorialRouting().router;
+export default new TutorialRoutes().router;
