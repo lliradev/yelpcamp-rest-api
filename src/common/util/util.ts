@@ -18,11 +18,10 @@ export class Util {
         return res.status(401).send({ message: 'Access denied' });
       }
       const decoded = jwt.verify(token, `${environment.jwtSecret}`) as IPayload;
-      req.params.id = decoded._id;
+      req.userId = decoded._id;
       next();
     } catch (err) {
       console.error(err.message);
-      // res.status(500).send({ message: 'Token authentication failed.' });
       res.status(500).send({ message: err.message });
     }
   }

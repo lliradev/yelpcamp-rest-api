@@ -5,7 +5,6 @@ export interface IUser extends Document {
   fullname: string;
   email: string;
   password: string;
-  saltSecret?: string;
   avatar?: string;
   resetPasswordToken?: String;
   resetPasswordExpires?: Date;
@@ -26,7 +25,6 @@ const UserSchema = new Schema<IUser>({
     required: true,
     minlength: 8,
   },
-  saltSecret: String,
   avatar: {
     type: String,
     default:
@@ -43,7 +41,7 @@ UserSchema.methods.encryptPassword = async (
   return bcrypt.hash(password, salt);
 };
 
-UserSchema.methods.validatePassword = async function (
+UserSchema.methods.comparePassword = async function (
   password: string
 ): Promise<boolean> {
   return await bcrypt.compare(password, this.password);

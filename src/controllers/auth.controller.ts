@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/user.model';
 import { environment } from '../common/environment/environment';
@@ -22,10 +21,7 @@ export class AuthController {
           .send({ message: 'Los datos proporcionados no son válidos' });
       }
       const user: IUser = new User(body);
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(user.password, salt);
-      user.password = hash;
-      user.saltSecret = salt;
+      user.password = await user.encryptPassword(user.password);
       const doc = await user.save();
       res.status(StatusCodes.CREATED).send(doc);
     } catch (err) {
@@ -58,7 +54,7 @@ export class AuthController {
           .status(StatusCodes.BAD_REQUEST)
           .send({ message: 'El correo electrónico no está registrado' });
       }
-      const matched = await bcrypt.compare(body.password, user.password);
+      const matched = await user.comparePassword(body.password);
       if (!matched) {
         return res
           .status(StatusCodes.UNAUTHORIZED)
@@ -85,11 +81,13 @@ export class AuthController {
    */
   public static async profile(req: Request, res: Response) {
     try {
-      const user = await User.findById({ _id: req.params.id });
+      const user = await User.findById({ _id: req.userId });
       if (!user) {
-        return res.status(404).send({ message: 'User record not found.' });
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .send({ message: 'User record not found.' });
       }
-      return res.status(200).send({
+      return res.status(StatusCodes.OK).send({
         user: {
           id: user._id,
           fullname: user.fullname,
@@ -99,18 +97,43 @@ export class AuthController {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).send({ message: err.message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send({ message: err.message });
     }
   }
 
   /**
-   * changePassword
+   * Método para cambiar la contraseña del usuario
+   *
+   * @param req objeto que contiene información sobre la solicitud HTTP
+   * @param res objeto que devuelve información sobre la respuesta HTTP
+   * @returns contraseña nueva
    */
   public static async changePassword(req: Request, res: Response) {
     try {
+      const user = await User.findById({ _id: req.userId });
+      const { oldPassword, newPassword } = req.body;
+      if (!(oldPassword && newPassword)) {
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .send({ message: 'Las contraseñas no coinciden' });
+      }
+      if (!user) {
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .send({ message: 'User record not found.' });
+      }
+      user.password = await user.encryptPassword(newPassword);
+      await user.save();
+      res
+        .status(StatusCodes.CREATED)
+        .send({ message: 'La contraseña se cambio con éxito' });
     } catch (err) {
       console.error(err);
-      res.status(500).send({ message: err.message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send({ message: err.message });
     }
   }
 }
