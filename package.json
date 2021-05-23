@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "repository": {},
   "scripts": {
     "build": "tsc",
     "dev": "cross-env NODE_ENV=development nodemon src/bin/www.ts --exec ts-node",

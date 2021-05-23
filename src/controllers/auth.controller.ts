@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import UserModel, { User } from '../models/user.model';
+import User, { IUser } from '../models/user.model';
 import { environment } from '../common/environment/environment';
 
 export class AuthController {
@@ -21,7 +21,7 @@ export class AuthController {
           .status(StatusCodes.BAD_REQUEST)
           .send({ message: 'Los datos proporcionados no son válidos' });
       }
-      const user: User = new UserModel(body);
+      const user: IUser = new User(body);
       const salt = await bcrypt.genSalt(10);
       const hash = await bcrypt.hash(user.password, salt);
       user.password = hash;
@@ -52,7 +52,7 @@ export class AuthController {
   public static async authenticate(req: Request, res: Response) {
     try {
       const { body } = req;
-      const user = await UserModel.findOne({ email: body.email });
+      const user = await User.findOne({ email: body.email });
       if (!user) {
         return res
           .status(StatusCodes.BAD_REQUEST)
@@ -85,21 +85,29 @@ export class AuthController {
    */
   public static async profile(req: Request, res: Response) {
     try {
-      const user = await UserModel.findById({ _id: req.params.id });
+      const user = await User.findById({ _id: req.params.id });
       if (!user) {
-        return res
-          .status(404)
-          .send({ status: false, message: 'User record not found.' });
+        return res.status(404).send({ message: 'User record not found.' });
       }
       return res.status(200).send({
-        status: true,
         user: {
-          id: user.id,
+          id: user._id,
           fullname: user.fullname,
           email: user.email,
           avatar: user.avatar,
         },
       });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: err.message });
+    }
+  }
+
+  /**
+   * changePassword
+   */
+  public static async changePassword(req: Request, res: Response) {
+    try {
     } catch (err) {
       console.error(err);
       res.status(500).send({ message: err.message });

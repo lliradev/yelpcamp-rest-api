@@ -1,7 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
+import bcrypt from 'bcryptjs';
 
-export interface User extends Document {
-  id: string;
+export interface IUser extends Document {
   fullname: string;
   email: string;
   password: string;
@@ -9,27 +9,44 @@ export interface User extends Document {
   avatar?: string;
   resetPasswordToken?: String;
   resetPasswordExpires?: Date;
+
+  encryptPassword(password: string): Promise<string>;
+  comparePassword(password: string): Promise<boolean>;
 }
 
-const UserSchema = new Schema({
-  fullname: {
-    type: String,
-    required: 'El nombre completo no puede estar vacío',
-  },
+const UserSchema = new Schema<IUser>({
+  fullname: { type: String, required: true },
   email: {
     type: String,
-    required: 'El correo electrónico no puede estar vacío',
+    required: true,
     unique: true,
   },
   password: {
     type: String,
-    required: 'La contraseña no puede estar vacía',
-    minlength: [8, 'La contraseña debe tener al menos 8 caracteres'],
+    required: true,
+    minlength: 8,
   },
   saltSecret: String,
-  avatar: String,
+  avatar: {
+    type: String,
+    default:
+      'https://res.cloudinary.com/drv584gsz/image/upload/v1621381544/user-default_gx6h8w.png',
+  },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
 });
 
-export default model<User>('User', UserSchema);
+UserSchema.methods.encryptPassword = async (
+  password: string
+): Promise<string> => {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
+};
+
+UserSchema.methods.validatePassword = async function (
+  password: string
+): Promise<boolean> {
+  return await bcrypt.compare(password, this.password);
+};
+
+export default model<IUser>('User', UserSchema);
