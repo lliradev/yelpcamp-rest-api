@@ -1,8 +1,10 @@
 import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { IPost } from './post.model';
 
 export interface IUser extends Document {
   fullname: string;
+  username: string;
   email: string;
   password: string;
   image?: {
@@ -11,6 +13,7 @@ export interface IUser extends Document {
   };
   resetPasswordToken?: String;
   resetPasswordExpires?: Date;
+  posts: IPost[];
 
   encryptPassword(password: string): Promise<string>;
   comparePassword(password: string): Promise<boolean>;
@@ -18,6 +21,7 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>({
   fullname: { type: String, required: true },
+  username: { type: String, required: true, unique: true },
   email: {
     type: String,
     required: true,
@@ -38,6 +42,12 @@ const UserSchema = new Schema<IUser>({
     },
     public_id: String,
   },
+  posts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+    },
+  ],
 });
 
 UserSchema.methods.encryptPassword = async (

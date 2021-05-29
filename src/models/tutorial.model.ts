@@ -1,7 +1,18 @@
 import { Schema, model, Document, PaginateModel } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-// Schemas
+export interface ITutorial extends Document {
+  title: string;
+  description: string;
+  isPublished: boolean;
+  comments: IComment[];
+}
+interface IComment {
+  title: string;
+  likes: number;
+  dislikes: number;
+}
+
 const CommentSchema = new Schema(
   {
     title: { type: String, trim: true },
@@ -14,12 +25,12 @@ const TutorialSchema = new Schema(
   {
     title: {
       type: String,
-      required: [true, 'El campo título no puede estar vacío.'],
+      required: true,
       trim: true,
     },
     description: {
       type: String,
-      required: [true, 'El campo descripción no puede estar vacío.'],
+      required: true,
       trim: true,
     },
     isPublished: Boolean,
@@ -27,19 +38,6 @@ const TutorialSchema = new Schema(
   },
   { versionKey: false, timestamps: true }
 );
-
-// Interfaces
-export interface ITutorial extends Document {
-  title: string;
-  description: string;
-  isPublished: boolean;
-  comments: IComment[];
-}
-interface IComment {
-  title: string;
-  likes: number;
-  dislikes: number;
-}
 
 TutorialSchema.plugin(mongoosePaginate);
 interface TutorialModel<T extends Document> extends PaginateModel<T> {}
