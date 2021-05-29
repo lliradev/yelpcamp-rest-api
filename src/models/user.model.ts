@@ -1,16 +1,13 @@
 import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { IPost } from './post.model';
+import { IImage } from './image.model';
 
 export interface IUser extends Document {
   fullname: string;
-  username: string;
   email: string;
   password: string;
-  image?: {
-    secure_url: string;
-    public_id: string;
-  };
+  image?: IImage;
   resetPasswordToken?: String;
   resetPasswordExpires?: Date;
   posts: IPost[];
@@ -21,7 +18,6 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>({
   fullname: { type: String, required: true },
-  username: { type: String, required: true, unique: true },
   email: {
     type: String,
     required: true,
@@ -54,7 +50,7 @@ UserSchema.methods.encryptPassword = async (
   password: string
 ): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
+  return await bcrypt.hash(password, salt);
 };
 
 UserSchema.methods.comparePassword = async function (

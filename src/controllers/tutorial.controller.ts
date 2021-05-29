@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { TutorialModel } from '../models/tutorial.model';
+import { Tutorial } from '../models/tutorial.model';
 import { StatusCodes } from 'http-status-codes';
 
 export class TutorialController {
@@ -19,7 +19,7 @@ export class TutorialController {
         sort: { [sort as string]: order },
       };
       console.log(options);
-      const tutorials = await TutorialModel.paginate({}, options);
+      const tutorials = await Tutorial.paginate({}, options);
       res.status(StatusCodes.OK).json(tutorials);
     } catch (err) {
       console.error(err);
@@ -38,7 +38,7 @@ export class TutorialController {
   public static async findById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const tutorial = await TutorialModel.findById(id);
+      const tutorial = await Tutorial.findById(id);
       if (tutorial) res.status(StatusCodes.OK).json(tutorial);
       else
         res
@@ -60,7 +60,7 @@ export class TutorialController {
    */
   public static async insert(req: Request, res: Response): Promise<void> {
     try {
-      const newTutorial = new TutorialModel({
+      const newTutorial = new Tutorial({
         title: req.body.title,
         description: req.body.description,
         isPublished: req.body.isPublished ? req.body.isPublished : false,
@@ -104,7 +104,7 @@ export class TutorialController {
         isPublished: req.body.isPublished ? req.body.isPublished : false,
         comments: req.body.comments,
       };
-      const result = await TutorialModel.findByIdAndUpdate(
+      const result = await Tutorial.findByIdAndUpdate(
         id,
         { $set: tutorial },
         { new: true }
@@ -131,7 +131,7 @@ export class TutorialController {
   public static async delete(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const tutorial = await TutorialModel.findByIdAndRemove(id);
+      const tutorial = await Tutorial.findByIdAndRemove(id);
       if (!tutorial)
         res
           .status(404)
@@ -151,7 +151,7 @@ export class TutorialController {
    */
   public static async deleteAll(req: Request, res: Response): Promise<void> {
     try {
-      const tutorials = await TutorialModel.deleteMany({});
+      const tutorials = await Tutorial.deleteMany({});
       res
         .status(200)
         .json({ message: `${tutorials.deletedCount} registros eliminados.` });

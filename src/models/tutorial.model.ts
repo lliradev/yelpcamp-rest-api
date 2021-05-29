@@ -40,8 +40,10 @@ const TutorialSchema = new Schema(
 );
 
 TutorialSchema.plugin(mongoosePaginate);
+
 interface TutorialModel<T extends Document> extends PaginateModel<T> {}
-export const TutorialModel: TutorialModel<ITutorial> = model<ITutorial>(
+
+export const Tutorial: TutorialModel<ITutorial> = model<ITutorial>(
   'Tutorial',
   TutorialSchema
 ) as TutorialModel<ITutorial>;

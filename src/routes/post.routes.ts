@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { PostController } from '../controllers/post.controller';
+import { Util } from '../common/util/util';
 
 class PostRoutes {
   public router: Router;
@@ -12,9 +13,9 @@ class PostRoutes {
   private initConfig(): void {
     this.router.get('/', PostController.findAll);
     this.router.get('/:id', PostController.findById);
-    this.router.post('/', PostController.insert);
-    this.router.put('/:id', PostController.update);
-    this.router.delete('/:id', PostController.delete);
+    this.router.post('/', Util.verifyJwtToken, PostController.insert);
+    this.router.put('/:id', Util.verifyJwtToken, PostController.update);
+    this.router.delete('/:id', Util.verifyJwtToken, PostController.delete);
   }
 }
 
