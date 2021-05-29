@@ -5,7 +5,10 @@ export interface IUser extends Document {
   fullname: string;
   email: string;
   password: string;
-  avatar?: string;
+  image?: {
+    secure_url: string;
+    public_id: string;
+  };
   resetPasswordToken?: String;
   resetPasswordExpires?: Date;
 
@@ -25,13 +28,16 @@ const UserSchema = new Schema<IUser>({
     required: true,
     minlength: 8,
   },
-  avatar: {
-    type: String,
-    default:
-      'https://res.cloudinary.com/drv584gsz/image/upload/v1621381544/user-default_gx6h8w.png',
-  },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  image: {
+    secure_url: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/drv584gsz/image/upload/v1621381544/user-default_gx6h8w.png',
+    },
+    public_id: String,
+  },
 });
 
 UserSchema.methods.encryptPassword = async (

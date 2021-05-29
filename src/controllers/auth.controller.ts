@@ -3,6 +3,10 @@ import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/user.model';
 import { environment } from '../common/environment/environment';
+import crypto from 'crypto';
+import sgMail from '@sendgrid/mail';
+import { IMail } from '../models/mail.model';
+sgMail.setApiKey(`${environment.sgMailApi}`);
 
 export class AuthController {
   /**
@@ -92,7 +96,7 @@ export class AuthController {
           id: user._id,
           fullname: user.fullname,
           email: user.email,
-          avatar: user.avatar,
+          image: user.image?.secure_url,
         },
       });
     } catch (err) {
@@ -134,6 +138,89 @@ export class AuthController {
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .send({ message: err.message });
+    }
+  }
+
+  /**
+   * Método que contiene la función de olvidar la contraseña
+   *
+   * @param req objeto que contiene información sobre la solicitud HTTP
+   * @param res objeto que devuelve información sobre la respuesta HTTP
+   * @returns envía un correo con el link para recuperar la contraseña
+   */
+  public static async forgotPassword(req: Request, res: Response) {
+    try {
+      const token = crypto.randomBytes(20).toString('hex');
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).send({ message: 'No account with that email.' });
+      }
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = new Date(Date.now() + 3600000);
+      await user.save();
+      const msg: IMail = {
+        to: email,
+        from: {
+          name: 'Yelpcamp Rest API - Admin',
+          email: 'abilira34@gmail.com',
+        },
+        subject: 'Yelpcamp - Forgot Password / Reset',
+        text: `You are receiving this because you (or someone else) have requested the reset 
+        of the password for your account.\n\n Please click on the following link, or paste 
+        this into your browser to complete the process:\n\n http://${req.headers.host}/reset/${token} \n\n 
+        If you did not request this, please ignore this email and your password will 
+        remain unchanged.\n`,
+      };
+      await sgMail.send(msg);
+      res.status(200).send({
+        message: `An e-mail has been sent to ${email} with further instructions.`,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: err.message });
+    }
+  }
+
+  /**
+   * Método para recuperar la contraseña
+   *
+   * @param req objeto que contiene información sobre la solicitud HTTP
+   * @param res objeto que devuelve información sobre la respuesta HTTP
+   * @returns envío de correo indicando que la contraseña se cambio
+   */
+  public static async resetPassword(req: Request, res: Response) {
+    try {
+      const { token } = req.params;
+      const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: new Date(Date.now()) },
+      });
+      if (!user) {
+        return res.status(400).send({
+          message: 'Password reset token is invalid or has expired',
+        });
+      }
+      user.password = await user.encryptPassword(req.body.password);
+      user.resetPasswordToken = null!;
+      user.resetPasswordExpires = null!;
+      await user.save();
+      const msg: IMail = {
+        to: user.email,
+        from: {
+          email: 'abilira34@gmail.com',
+        },
+        subject: 'Your password has been changed',
+        text: `Hello, \n\n This is a confirmation that the password for your account 
+        ${user.email} has just been changed.\n`,
+      };
+      await sgMail.send(msg);
+      res.status(200).send({
+        message: 'Success! Your password has been changed.',
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: err.message });
     }
   }
 }

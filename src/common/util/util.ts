@@ -21,7 +21,7 @@ export class Util {
       req.userId = decoded._id;
       next();
     } catch (err) {
-      console.error(err.message);
+      console.error(err);
       res.status(500).send({ message: err.message });
     }
   }

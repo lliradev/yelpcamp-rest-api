@@ -15,4 +15,5 @@ export const environment = {
   databaseUrl: process.env.MONGODB_URI,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiry: process.env.JWT_EXP,
+  sgMailApi: process.env.SENDGRID_API_KEY,
 };

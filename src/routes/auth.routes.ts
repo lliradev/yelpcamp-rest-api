@@ -19,6 +19,8 @@ class AuthRoutes {
       Util.verifyJwtToken,
       AuthController.changePassword
     );
+    this.router.put('/forgot', AuthController.forgotPassword);
+    this.router.put('/reset/:token', AuthController.resetPassword);
   }
 }
 
