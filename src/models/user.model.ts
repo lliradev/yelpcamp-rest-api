@@ -8,7 +8,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   image?: IImage;
-  resetPasswordToken?: String;
+  resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   posts: IPost[];
 
@@ -31,7 +31,7 @@ const UserSchema = new Schema<IUser>({
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   image: {
-    secure_url: {
+    url: {
       type: String,
       default:
         'https://res.cloudinary.com/drv584gsz/image/upload/v1621381544/user-default_gx6h8w.png',

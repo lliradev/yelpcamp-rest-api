@@ -1,4 +1,4 @@
 export interface IImage {
-  secure_url: string;
+  url: string;
   public_id: string;
 }

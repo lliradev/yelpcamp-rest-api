@@ -1,5 +1,6 @@
 import { Document, model, PaginateModel, Schema } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { IImage } from './image.model';
 import { IReview } from './review.model';
 import { IUser } from './user.model';
 
@@ -7,7 +8,7 @@ export interface IPost extends Document {
   title: string;
   price: string;
   description: string;
-  images?: string[];
+  image: IImage;
   location: string;
   lat: number;
   lng: number;
@@ -20,7 +21,10 @@ const PostSchema = new Schema(
     title: String,
     price: String,
     description: String,
-    images: [String],
+    image: {
+      url: String,
+      public_id: String,
+    },
     location: String,
     lat: Number,
     lng: Number,

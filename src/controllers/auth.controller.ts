@@ -96,7 +96,7 @@ export class AuthController {
           id: user._id,
           fullname: user.fullname,
           email: user.email,
-          image: user.image?.secure_url,
+          image: user.image?.url,
         },
       });
     } catch (err) {

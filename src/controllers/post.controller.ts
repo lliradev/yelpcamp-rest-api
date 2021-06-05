@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { PaginateOptions } from 'mongoose';
+import { unlink } from 'fs-extra';
+import cloudinary from '../common/util/cloudinary';
 import { IPost, Post } from '../models/post.model';
 
 export class PostController {
@@ -64,8 +66,21 @@ export class PostController {
   public static async insert(req: Request, res: Response): Promise<void> {
     try {
       const { body } = req;
-      const post: IPost = new Post(body);
+      const file = await cloudinary.v2.uploader.upload(req.file.path);
+      const post: IPost = new Post({
+        title: body.title,
+        price: body.price,
+        description: body.description,
+        image: {
+          url: file.secure_url,
+          public_id: file.public_id,
+        },
+        location: body.location,
+        lat: body.lat,
+        lng: body.lng,
+      });
       const doc = await post.save();
+      await unlink(req.file.path);
       res.status(StatusCodes.CREATED).send({ id: doc._id });
     } catch (err) {
       console.error(err);
@@ -85,15 +100,38 @@ export class PostController {
     try {
       const { id } = req.params;
       const { body } = req;
-      const post = {
-        id: body.id,
-        title: body.title,
-        price: body.price,
-        description: body.description,
-        location: body.location,
-        lat: body.lat,
-        lng: body.lng,
-      };
+      const query = await Post.findById(id);
+      let post;
+      if (req.file) {
+        if (query) {
+          await cloudinary.v2.uploader.destroy(query.image.public_id);
+        }
+        const file = await cloudinary.v2.uploader.upload(req.file.path);
+        post = {
+          id: body.id,
+          title: body.title,
+          price: body.price,
+          description: body.description,
+          location: body.location,
+          lat: body.lat,
+          lng: body.lng,
+          image: {
+            url: file.secure_url,
+            public_id: file.public_id,
+          },
+        };
+        await unlink(req.file.path);
+      } else {
+        post = {
+          id: body.id,
+          title: body.title,
+          price: body.price,
+          description: body.description,
+          location: body.location,
+          lat: body.lat,
+          lng: body.lng,
+        };
+      }
       const result = await Post.findByIdAndUpdate(
         id,
         { $set: post },
@@ -101,10 +139,10 @@ export class PostController {
       );
       if (!result) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .send({ message: `No se encontró la publicación con id: ${id}` });
       }
-      res.status(200).end();
+      res.status(StatusCodes.OK).end();
     } catch (err) {
       console.error(err);
       res
@@ -125,10 +163,10 @@ export class PostController {
       const post = await Post.findByIdAndRemove(id);
       if (!post) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .json({ message: `No se encontró la publicación con id: ${id}` });
       }
-      res.status(204).end();
+      res.status(StatusCodes.NO_CONTENT).end();
     } catch (err) {
       console.error(err);
       res
