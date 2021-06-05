@@ -166,6 +166,7 @@ export class PostController {
           .status(StatusCodes.NOT_FOUND)
           .json({ message: `No se encontró la publicación con id: ${id}` });
       }
+      await cloudinary.v2.uploader.destroy(post.image.public_id);
       res.status(StatusCodes.NO_CONTENT).end();
     } catch (err) {
       console.error(err);
